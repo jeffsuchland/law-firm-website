@@ -1,6 +1,19 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getBlogPosts } from '../../lib/contentful';
+import type { Asset } from 'contentful';
+
+type Author = {
+  sys: {
+    id: string;
+    type: string;
+  };
+  fields: {
+    name: string;
+    title: string;
+    image: Asset;
+  };
+};
 
 const posts = await getBlogPosts();
 ---
@@ -11,16 +24,12 @@ const posts = await getBlogPosts();
     
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {posts.map((post) => {
-        const imageUrl = post.featuredImage?.fields?.file?.url;
-        const authorImage = post.author?.fields?.image?.fields?.file?.url;
-        const authorName = post.author?.fields?.name;
-        const authorTitle = post.author?.fields?.title;
-
+        const author = post.author as Author;
         return (
           <article class="bg-white rounded-lg shadow-lg overflow-hidden">
-            {imageUrl && (
+            {post.featuredImage?.fields?.file?.url && (
               <img 
-                src={`https:${imageUrl}?w=800&h=400&fit=fill`}
+                src={`https:${post.featuredImage.fields.file.url}?w=800&h=400&fit=fill`}
                 alt={post.title}
                 class="w-full h-48 object-cover"
               />
@@ -32,19 +41,19 @@ const posts = await getBlogPosts();
                 </a>
               </h2>
               <p class="text-gray-600 mb-4">{post.excerpt}</p>
-              {authorName && (
+              {author?.fields && (
                 <div class="flex items-center">
-                  {authorImage && (
+                  {author.fields.image?.fields?.file?.url && (
                     <img 
-                      src={`https:${authorImage}?w=40&h=40&fit=fill`}
-                      alt={authorName}
+                      src={`https:${author.fields.image.fields.file.url}?w=40&h=40&fit=fill`}
+                      alt={author.fields.name}
                       class="w-10 h-10 rounded-full mr-3"
                     />
                   )}
                   <div>
-                    <p class="font-semibold">{authorName}</p>
-                    {authorTitle && (
-                      <p class="text-sm text-gray-600">{authorTitle}</p>
+                    <p class="font-semibold">{author.fields.name}</p>
+                    {author.fields.title && (
+                      <p class="text-sm text-gray-600">{author.fields.title}</p>
                     )}
                   </div>
                 </div>

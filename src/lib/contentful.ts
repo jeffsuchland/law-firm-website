@@ -1,41 +1,50 @@
 /// <reference types="astro/client" />
-import { createClient, Entry, EntryCollection, Asset } from 'contentful';
+import { createClient, Entry, EntryCollection, Asset, EntrySkeletonType } from 'contentful';
 
 const client = createClient({
   space: import.meta.env.CONTENTFUL_SPACE_ID,
   accessToken: import.meta.env.CONTENTFUL_ACCESS_TOKEN,
 });
 
-type ContentfulAuthorFields = {
-  name: string;
-  title: string;
-  image: Asset;
-}
-
-type ContentfulBlogPostFields = {
-  title: string;
-  slug: string;
-  publishDate: string;
-  featuredImage: Asset;
-  excerpt: string;
-  content: {
-    nodeType: 'document';
-    content: any[];
-    data: {};
+interface IContentfulAuthor extends EntrySkeletonType {
+  fields: {
+    name: string;
+    title: string;
+    image: Asset;
   };
-  author: Entry<ContentfulAuthorFields>;
+  contentTypeId: 'author';
 }
 
-type ContentfulTeamMemberFields = {
-  name: string;
-  title: string;
-  bio: string;
-  image: Asset;
-  specialties: string[];
+interface IContentfulBlogPost extends EntrySkeletonType {
+  fields: {
+    title: string;
+    slug: string;
+    publishDate: string;
+    featuredImage: Asset;
+    excerpt: string;
+    content: {
+      nodeType: 'document';
+      content: any[];
+      data: Record<string, unknown>;
+    };
+    author: Entry<IContentfulAuthor>;
+  };
+  contentTypeId: 'blogPost';
 }
 
-export type BlogPost = Entry<ContentfulBlogPostFields>;
-export type TeamMember = Entry<ContentfulTeamMemberFields>;
+interface IContentfulTeamMember extends EntrySkeletonType {
+  fields: {
+    name: string;
+    title: string;
+    bio: string;
+    image: Asset;
+    specialties: string[];
+  };
+  contentTypeId: 'teamMember';
+}
+
+export type BlogPost = Entry<IContentfulBlogPost>;
+export type TeamMember = Entry<IContentfulTeamMember>;
 
 type BlogPostResponse = {
   id: string;
@@ -43,19 +52,19 @@ type BlogPostResponse = {
   slug: string;
   excerpt: string;
   featuredImage: Asset;
-  author: Entry<ContentfulAuthorFields>;
+  author: Entry<IContentfulAuthor>;
   publishDate: string;
   content: {
     nodeType: 'document';
     content: any[];
-    data: {};
+    data: Record<string, unknown>;
   };
 }
 
 export async function getBlogPosts(): Promise<BlogPostResponse[]> {
-  const response = await client.getEntries<ContentfulBlogPostFields>({
+  const response = await client.getEntries<IContentfulBlogPost>({
     content_type: 'blogPost',
-    order: '-sys.createdAt',
+    order: ['-sys.createdAt'] as const,
   });
 
   return response.items.map((item) => {
@@ -74,11 +83,11 @@ export async function getBlogPosts(): Promise<BlogPostResponse[]> {
 }
 
 export async function getBlogPost(slug: string): Promise<BlogPostResponse | null> {
-  const response = await client.getEntries<ContentfulBlogPostFields>({
+  const response = await client.getEntries<IContentfulBlogPost>({
     content_type: 'blogPost',
-    'fields.slug': slug,
     limit: 1,
-  });
+    'fields.slug': slug,
+  } as any);
 
   if (!response.items[0]) return null;
 
@@ -95,10 +104,19 @@ export async function getBlogPost(slug: string): Promise<BlogPostResponse | null
   };
 }
 
-export async function getTeamMembers() {
-  const response = await client.getEntries<ContentfulTeamMemberFields>({
+export type TeamMemberResponse = {
+  id: string;
+  name: string;
+  title: string;
+  bio: string;
+  image: Asset;
+  specialties: string[];
+};
+
+export async function getTeamMembers(): Promise<TeamMemberResponse[]> {
+  const response = await client.getEntries<IContentfulTeamMember>({
     content_type: 'teamMember',
-    order: 'fields.name',
+    order: ['sys.createdAt'] as const,
   });
 
   return response.items.map((item) => {

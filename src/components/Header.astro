@@ -1,21 +1,61 @@
 ---
+const menuItems = [
+  { href: '/', text: 'Home' },
+  { href: '/practice-areas', text: 'Practice Areas' },
+  { href: '/team', text: 'Our Team' },
+  { href: '/blog', text: 'Blog' },
+  { href: '/contact', text: 'Contact' }
+];
 ---
-<header class="bg-gray-900 text-white">
+
+<header class="bg-gray-900 text-white relative z-50">
   <nav class="container mx-auto px-6 py-4">
     <div class="flex justify-between items-center">
       <a href="/" class="text-2xl font-bold">Justice & Associates</a>
       <div class="hidden md:flex space-x-6">
-        <a href="/" class="hover:text-gray-300">Home</a>
-        <a href="/practice-areas" class="hover:text-gray-300">Practice Areas</a>
-        <a href="/team" class="hover:text-gray-300">Our Team</a>
-        <a href="/blog" class="hover:text-gray-300">Blog</a>
-        <a href="/contact" class="hover:text-gray-300">Contact</a>
+        {menuItems.map(item => (
+          <a href={item.href} class="hover:text-gray-300">{item.text}</a>
+        ))}
       </div>
-      <button class="md:hidden">
+      <button 
+        id="menuButton" 
+        class="md:hidden focus:outline-none hover:text-gray-300" 
+        aria-label="Toggle menu"
+      >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
     </div>
   </nav>
+  
+  <!-- Mobile menu -->
+  <div 
+    id="mobileMenu" 
+    class="hidden fixed inset-x-0 top-[72px] bg-gray-800 shadow-xl md:hidden"
+  >
+    <div class="container mx-auto px-6 py-8">
+      <div class="flex flex-col space-y-6">
+        {menuItems.map(item => (
+          <a 
+            href={item.href} 
+            class="text-lg font-medium hover:text-gray-300 border-b border-gray-700 pb-4 last:border-b-0"
+          >
+            {item.text}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
 </header>
+
+<script is:inline>
+  const menuButton = document.getElementById('menuButton');
+  const mobileMenu = document.getElementById('mobileMenu');
+
+  if (menuButton && mobileMenu) {
+    menuButton.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+    });
+  }
+</script>
