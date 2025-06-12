@@ -1,0 +1,123 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getBlogPosts } from '../lib/contentful';
+
+const posts = await getBlogPosts();
+const latestPosts = posts.slice(0, 3); // Get up to 3 most recent posts
+---
+
+<Layout title="Justice & Associates - Personal Injury Attorneys">
+  <section class="bg-gray-900 text-white py-20">
+    <div class="container mx-auto px-6">
+      <div class="max-w-3xl">
+        <h1 class="text-5xl font-bold mb-6">Fighting for Your Rights</h1>
+        <p class="text-xl mb-8">Experienced personal injury attorneys dedicated to getting you the compensation you deserve.</p>
+        <a href="/contact" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg inline-block">Free Consultation</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="container mx-auto px-6">
+      <h2 class="text-3xl font-bold text-center mb-12">Our Practice Areas</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h3 class="text-xl font-semibold mb-4">Car Accidents</h3>
+          <p class="text-gray-600 mb-4">Expert representation for victims of automobile accidents.</p>
+          <a href="/practice-areas#car-accidents" class="text-blue-600 hover:text-blue-800">Learn More →</a>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h3 class="text-xl font-semibold mb-4">Workplace Injuries</h3>
+          <p class="text-gray-600 mb-4">Protecting workers' rights and ensuring fair compensation.</p>
+          <a href="/practice-areas#workplace-injuries" class="text-blue-600 hover:text-blue-800">Learn More →</a>
+        </div>
+        <div class="bg-white p-6 rounded-lg shadow-lg">
+          <h3 class="text-xl font-semibold mb-4">Medical Malpractice</h3>
+          <p class="text-gray-600 mb-4">Hold healthcare providers accountable for negligence.</p>
+          <a href="/practice-areas#medical-malpractice" class="text-blue-600 hover:text-blue-800">Learn More →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-gray-100 py-16">
+    <div class="container mx-auto px-6">
+      <h2 class="text-3xl font-bold text-center mb-12">Why Choose Us</h2>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+        <div>
+          <div class="text-4xl font-bold text-blue-600 mb-4">25+</div>
+          <p class="text-gray-600">Years of Experience</p>
+        </div>
+        <div>
+          <div class="text-4xl font-bold text-blue-600 mb-4">$100M+</div>
+          <p class="text-gray-600">Recovered for Clients</p>
+        </div>
+        <div>
+          <div class="text-4xl font-bold text-blue-600 mb-4">1000+</div>
+          <p class="text-gray-600">Cases Won</p>
+        </div>
+        <div>
+          <div class="text-4xl font-bold text-blue-600 mb-4">99%</div>
+          <p class="text-gray-600">Success Rate</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="py-16">
+    <div class="container mx-auto px-6">
+      <h2 class="text-3xl font-bold text-center mb-12">Latest from Our Blog</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {latestPosts.map((post) => {
+          const imageUrl = post.featuredImage?.fields?.file?.url;
+          const authorImage = post.author?.fields?.image?.fields?.file?.url;
+          const authorName = post.author?.fields?.name;
+          const authorTitle = post.author?.fields?.title;
+
+          return (
+            <article class="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+              {imageUrl && (
+                <img 
+                  src={`https:${imageUrl}?w=800&h=400&fit=fill`}
+                  alt={post.title}
+                  class="w-full h-48 object-cover"
+                />
+              )}
+              <div class="p-6">
+                <h3 class="text-xl font-semibold mb-2 hover:text-blue-600 transition-colors">
+                  <a href={`/blog/${post.slug}`}>
+                    {post.title}
+                  </a>
+                </h3>
+                <p class="text-gray-600 mb-4">{post.excerpt}</p>
+                
+                {authorName && (
+                  <div class="flex items-center pt-4 border-t border-gray-100">
+                    {authorImage && (
+                      <img 
+                        src={`https:${authorImage}?w=40&h=40&fit=fill`}
+                        alt={authorName}
+                        class="w-10 h-10 rounded-full mr-3"
+                      />
+                    )}
+                    <div>
+                      <p class="font-semibold text-sm">{authorName}</p>
+                      {authorTitle && (
+                        <p class="text-sm text-gray-600">{authorTitle}</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </article>
+          );
+        })}
+        {latestPosts.length === 0 && (
+          <div class="col-span-3 text-center py-12 text-gray-500">
+            No blog posts available yet.
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+</Layout>

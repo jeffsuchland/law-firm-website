@@ -1,0 +1,53 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getTeamMembers } from '../lib/contentful';
+import { documentToHtmlString } from '@contentful/rich-text-html-renderer';
+
+const teamMembers = await getTeamMembers();
+---
+
+<Layout 
+  title="Our Team - Justice & Associates" 
+  description="Meet our experienced team of attorneys and legal professionals dedicated to serving you."
+>
+  <div class="container mx-auto px-6 py-12">
+    <h1 class="text-4xl font-bold mb-12 text-center">Our Legal Team</h1>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {teamMembers.map((member) => (
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+          {member.image?.fields?.file?.url && (
+            <img 
+              src={`https:${member.image.fields.file.url}?w=600&h=400&fit=fill&f=faces`}
+              alt={member.name}
+              class="w-full h-64 object-cover"
+            />
+          )}
+          <div class="p-6">
+            <h2 class="text-2xl font-semibold mb-2">{member.name}</h2>
+            <p class="text-blue-600 font-medium mb-4">{member.title}</p>
+            
+            {member.specialties && member.specialties.length > 0 && (
+              <div class="mb-4">
+                <h3 class="text-sm font-semibold text-gray-600 mb-2">Areas of Practice</h3>
+                <div class="flex flex-wrap gap-2">
+                  {member.specialties.map((specialty) => (
+                    <span class="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm">
+                      {specialty}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            <div class="prose prose-sm prose-p:mb-4">
+              {member.bio && (
+                <div set:html={documentToHtmlString(member.bio)} />
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</Layout>

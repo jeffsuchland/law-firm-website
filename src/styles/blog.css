@@ -1,0 +1,9 @@
+/* Blog content styles */
+.prose p {
+  margin-bottom: 2em !important;
+}
+
+.prose p:empty {
+  height: 2em !important;
+  display: block !important;
+}

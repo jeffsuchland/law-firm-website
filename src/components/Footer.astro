@@ -1,0 +1,39 @@
+---
+const currentYear = new Date().getFullYear();
+---
+<footer class="bg-gray-900 text-white mt-20">
+  <div class="container mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div>
+        <h3 class="text-xl font-bold mb-4">Justice & Associates</h3>
+        <p class="text-gray-400">Personal Injury Attorneys serving California since 1995.</p>
+      </div>
+      <div>
+        <h4 class="text-lg font-semibold mb-4">Practice Areas</h4>
+        <ul class="space-y-2">
+          <li><a href="/practice-areas#car-accidents" class="text-gray-400 hover:text-white">Car Accidents</a></li>
+          <li><a href="/practice-areas#motorcycle-accidents" class="text-gray-400 hover:text-white">Motorcycle Accidents</a></li>
+          <li><a href="/practice-areas#truck-accidents" class="text-gray-400 hover:text-white">Truck Accidents</a></li>
+          <li><a href="/practice-areas#workplace-injuries" class="text-gray-400 hover:text-white">Workplace Injuries</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+        <ul class="space-y-2">
+          <li><a href="/team" class="text-gray-400 hover:text-white">Our Team</a></li>
+          <li><a href="/blog" class="text-gray-400 hover:text-white">Blog</a></li>
+          <li><a href="/contact" class="text-gray-400 hover:text-white">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-lg font-semibold mb-4">Contact Us</h4>
+        <p class="text-gray-400">1234 Legal Street<br/>San Francisco, CA 94105</p>
+        <p class="text-gray-400 mt-2">Phone: (555) 123-4567</p>
+        <p class="text-gray-400">Email: info@justice-associates.com</p>
+      </div>
+    </div>
+    <div class="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400">
+      <p>&copy; {currentYear} Justice & Associates. All rights reserved.</p>
+    </div>
+  </div>
+</footer>
