@@ -1,10 +1,21 @@
 /// <reference types="astro/client" />
 import { createClient, Entry, EntryCollection, Asset, EntrySkeletonType } from 'contentful';
 
-const client = createClient({
-  space: import.meta.env.CONTENTFUL_SPACE_ID,
-  accessToken: import.meta.env.CONTENTFUL_ACCESS_TOKEN,
-});
+// Check if environment variables are available
+const hasContentfulCredentials = 
+  typeof import.meta.env.CONTENTFUL_SPACE_ID === 'string' && 
+  typeof import.meta.env.CONTENTFUL_ACCESS_TOKEN === 'string';
+
+// Create a client if credentials are available, otherwise create a mock client
+const client = hasContentfulCredentials 
+  ? createClient({
+      space: import.meta.env.CONTENTFUL_SPACE_ID,
+      accessToken: import.meta.env.CONTENTFUL_ACCESS_TOKEN,
+    })
+  : {
+      // Mock client methods for development without credentials
+      getEntries: () => Promise.resolve({ items: [] }),
+    } as any;
 
 interface IContentfulAuthor extends EntrySkeletonType {
   fields: {

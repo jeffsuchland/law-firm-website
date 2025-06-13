@@ -30,6 +30,8 @@ A modern law firm website built with Astro and Contentful CMS.
    CONTENTFUL_SPACE_ID=your_space_id
    CONTENTFUL_ACCESS_TOKEN=your_access_token
    ```
+   
+   > **Note:** A `.env.example` file is provided as a template. You can copy this file to `.env` and replace the placeholder values with your actual Contentful credentials. The site will work without credentials but will display empty content sections.
 4. Start the development server:
    ```bash
    npm run dev

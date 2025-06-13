@@ -6,56 +6,139 @@ const menuItems = [
   { href: '/blog', text: 'Blog' },
   { href: '/contact', text: 'Contact' }
 ];
+
+const currentPath = Astro.url.pathname;
 ---
 
-<header class="bg-gray-900 text-white relative z-50">
-  <nav class="container mx-auto px-6 py-4">
-    <div class="flex justify-between items-center">
-      <a href="/" class="text-2xl font-bold">Justice & Associates</a>
-      <div class="hidden md:flex space-x-6">
-        {menuItems.map(item => (
-          <a href={item.href} class="hover:text-gray-300">{item.text}</a>
-        ))}
+<header class="bg-gray-900 text-white sticky top-0 z-50 shadow-lg transition-all duration-300">
+  <div class="container mx-auto px-6">
+    <nav class="flex justify-between items-center py-4">
+      <a href="/" class="flex items-center space-x-2">
+        <span class="text-blue-400 text-3xl">⚖️</span>
+        <span class="text-2xl font-bold">Justice & Associates</span>
+      </a>
+      
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex items-center space-x-8">
+        {menuItems.map(item => {
+          const isActive = currentPath === item.href || 
+            (item.href !== '/' && currentPath.startsWith(item.href));
+          return (
+            <a 
+              href={item.href} 
+              class={`font-medium transition-colors duration-300 py-2 border-b-2 ${isActive ? 'border-blue-400 text-blue-400' : 'border-transparent hover:text-blue-400 hover:border-blue-400'}`}
+            >
+              {item.text}
+            </a>
+          );
+        })}
+        <a 
+          href="/contact" 
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-5 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg ml-4"
+        >
+          Free Consultation
+        </a>
       </div>
+      
+      <!-- Mobile Menu Button -->
       <button 
         id="menuButton" 
-        class="md:hidden focus:outline-none hover:text-gray-300" 
+        class="lg:hidden focus:outline-none" 
         aria-label="Toggle menu"
+        aria-expanded="false"
       >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg id="menuIcon" class="w-7 h-7 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
         </svg>
       </button>
-    </div>
-  </nav>
+    </nav>
+  </div>
   
-  <!-- Mobile menu -->
+  <!-- Mobile Menu -->
   <div 
     id="mobileMenu" 
-    class="hidden fixed inset-x-0 top-[72px] bg-gray-800 shadow-xl md:hidden"
+    class="fixed inset-0 z-40 bg-gray-900 bg-opacity-95 backdrop-blur-sm transform translate-x-full transition-transform duration-300 lg:hidden pt-20"
   >
     <div class="container mx-auto px-6 py-8">
       <div class="flex flex-col space-y-6">
-        {menuItems.map(item => (
-          <a 
-            href={item.href} 
-            class="text-lg font-medium hover:text-gray-300 border-b border-gray-700 pb-4 last:border-b-0"
-          >
-            {item.text}
-          </a>
-        ))}
+        {menuItems.map(item => {
+          const isActive = currentPath === item.href || 
+            (item.href !== '/' && currentPath.startsWith(item.href));
+          return (
+            <a 
+              href={item.href} 
+              class={`text-xl font-medium py-3 border-b border-gray-700 ${isActive ? 'text-blue-400' : 'hover:text-blue-400'}`}
+            >
+              {item.text}
+            </a>
+          );
+        })}
+        <a 
+          href="/contact" 
+          class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg text-center mt-4 transition-all duration-300"
+        >
+          Free Consultation
+        </a>
       </div>
     </div>
   </div>
 </header>
 
 <script is:inline>
-  const menuButton = document.getElementById('menuButton');
-  const mobileMenu = document.getElementById('mobileMenu');
-
-  if (menuButton && mobileMenu) {
-    menuButton.addEventListener('click', () => {
-      mobileMenu.classList.toggle('hidden');
+  document.addEventListener('DOMContentLoaded', () => {
+    const menuButton = document.getElementById('menuButton');
+    const mobileMenu = document.getElementById('mobileMenu');
+    const menuIcon = document.getElementById('menuIcon');
+    const header = document.querySelector('header');
+    let isMenuOpen = false;
+    
+    // Function to toggle menu state
+    function toggleMenu() {
+      isMenuOpen = !isMenuOpen;
+      menuButton.setAttribute('aria-expanded', isMenuOpen);
+      
+      if (isMenuOpen) {
+        mobileMenu.classList.remove('translate-x-full');
+        document.body.classList.add('overflow-hidden');
+        menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+      } else {
+        mobileMenu.classList.add('translate-x-full');
+        document.body.classList.remove('overflow-hidden');
+        menuIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+      }
+    }
+    
+    // Add scroll effect to header
+    let lastScrollY = window.scrollY;
+    
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 100) {
+        header.classList.add('py-2', 'bg-gray-900/95', 'backdrop-blur-sm');
+        
+        if (lastScrollY < window.scrollY && window.scrollY > 300 && !isMenuOpen) {
+          // Scrolling down - hide header
+          header.classList.add('-translate-y-full');
+        } else {
+          // Scrolling up - show header
+          header.classList.remove('-translate-y-full');
+        }
+      } else {
+        header.classList.remove('py-2', 'bg-gray-900/95', 'backdrop-blur-sm');
+      }
+      
+      lastScrollY = window.scrollY;
     });
-  }
+    
+    if (menuButton && mobileMenu) {
+      menuButton.addEventListener('click', toggleMenu);
+      
+      // Close menu when clicking on links
+      const mobileLinks = mobileMenu.querySelectorAll('a');
+      mobileLinks.forEach(link => {
+        link.addEventListener('click', () => {
+          if (isMenuOpen) toggleMenu();
+        });
+      });
+    }
+  });
 </script>
